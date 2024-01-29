@@ -1,74 +1,71 @@
 import React, { useEffect, useState, FC } from "react";
 import { IGridInterfaceProps } from "../../interfaces/mapInterface";
 import GridCell from '../map/gridCell'
-import path from "path";
+import { CarIcon as car } from "./icon/CarIcon";
+
+import { createAdjacencyList, shortestPath, IAdjacentList } from "../../utils/generatePath";
 
 
 const gridSize : number = 5000;
 const squareSize : number = 5;
 const gridCount : number = gridSize / squareSize;
 
-const MapComponent = ()=>{
+//Test
+var adjacentList = {};
+//
 
-    const [path, setPath] = useState({});
+interface IPath {
+    updatedTime : string,
+    path : number[][]
+}
+
+const Component = ()=>{
+
+    const [path, setPath] = useState({} as IPath);
 
     useEffect(()=>{
-        const pathData : object = require("../../utils/path.json");
-        console.log(pathData);
+        const pathData : IPath = require("../../utils/path.json");
+        //console.log("Path Data",pathData);
         setPath(pathData);
     },[path])
+
     if(path){
         return (
-            <svg width={gridSize} height={gridSize}>{constructPathOptimized(gridCount, gridCount, path)}</svg>
+        <>
+            <svg width={gridSize/squareSize} height={gridSize/squareSize}>
+                {path['path'] && constructPath(path['path'])}
+                {car({x : 70, y : 90, width : 25, height : 25, rotation : 90})}
+                {JSON.stringify(path)}
+            </svg>
+        </>
+            
         )
     }
     return <div>`Path load failed`</div>
     
 }
 
-const constructPath = (rowCount : number, colCount : number, path : any) : JSX.Element[] => {
-    const mapObj : JSX.Element[] = [];
-    for(let x = 0; x < rowCount; x += 1){
-        for(let y = 0; y < colCount; y +=1){
-            let _x:number =  x * squareSize;
-            let _y :number =  y * squareSize;
-            let _fill : string = path[`${_x}:${_y}`] ? "white" : "#adb5bd";
-            const prop : IGridInterfaceProps = {
-                x : _x,
-                y : _y,
-                height : squareSize,
-                width : squareSize,
-                fill : _fill
-            };
-            mapObj.push(
-                <rect {...prop} key={`${prop.x}:${prop.y}`}></rect>
-            )
-        }
-    }
-    return mapObj;
-}
+const constructPath = (path : number[][] ) : JSX.Element[] =>{
+    const pathElements : JSX.Element[] = [];
 
-const constructPathOptimized = (rowCount : number, colCount : number, path : any) : JSX.Element[] =>{
-    const pathObj : JSX.Element[] = [];
-    const latLong : string[] = Object.keys(path);
-    for(let i = 0; i < latLong.length; i++){
-        let lat = latLong[i].split(':')[0];
-        let long = latLong[i].split(':')[1];
-        let _x :number =  parseInt(lat);
-        let _y :number =  parseInt(long);
+    for(let i = 0; i < path.length; i++){
+        let lat = path[i][0];
+        let long = path[i][1];
+
         const prop : IGridInterfaceProps = {
-            x : _x,
-            y : _y,
+            x : lat,
+            y : long,
             height : squareSize,
             width : squareSize,
             fill : "#adb5bd"
         };
-        pathObj.push(
-            <rect {...prop} key={`${prop.x}:${prop.y}`}></rect>
+        pathElements.push(
+            <GridCell {...prop} key={`${prop.x}:${prop.y}`}></GridCell>
         )
     }
-
-    return pathObj;
+    return pathElements;
 }
+
+const MapComponent = React.memo(Component);
 
 export default MapComponent;
