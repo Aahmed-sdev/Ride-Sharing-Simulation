@@ -1,7 +1,7 @@
 import React, { useEffect, useState, FC } from "react";
 import { IGridInterfaceProps } from "../../interfaces/mapInterface";
 import GridCell from '../map/gridCell'
-import { CarIcon as car } from "./icon/CarIcon";
+import CarComponent from "./CarComponent";
 
 import { createAdjacencyList, shortestPath, IAdjacentList } from "../../utils/generatePath";
 
@@ -34,8 +34,7 @@ const Component = ()=>{
         <>
             <svg width={gridSize/squareSize} height={gridSize/squareSize}>
                 {path['path'] && constructPath(path['path'])}
-                {car({x : 70, y : 90, width : 25, height : 25, rotation : 90})}
-                {JSON.stringify(path)}
+                <CarComponent x ={120} y ={90} width ={25} height={25} rotation={90} />
             </svg>
         </>
             

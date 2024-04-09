@@ -5,7 +5,7 @@ const CarComponent = ({x, y, width, height, rotation} : ICarIcon)=>{
         transform : `scale(0.1)`
     }
     return(
-        <span style={styles}>{car({x, y, width, height, rotation})}</span>
+      <>{car({x, y, width, height, rotation})}</>
     )
 
     
